@@ -1,10 +1,30 @@
 (* Solutions to SA2 assignment, Intro to ML *)
 
 (* Name: Nathan Oswald                      *)
-(* Time spent on HW6:
+(* Time spent on SA2:
+    Honestly, maybe an hour or two? Most of the
+    problems were pretty easy to figure out after
+    reading all of the SML documents (that took about
+    an hour or so to get through). 
+
+    Learning foldl was a little tricky but I figured it out
+    and partition was the hardest because I was going
+    in the right direction, but visually, the recursion
+    was difficult. Using Copilot helped me figure out
+    the val (l1, l2) = parition p xs which was similar
+    to what I was trying to do, but I didn't realize I
+    could set it up that way.
 *)
 
 (* Collaborators and references:
+   Copilot
+   I did not work on this with anyone as I 
+   was able to get through the problems pretty easily
+   (I also wanted to learn SML on my own first to get
+    a hang of the syntax on my own before working with others)
+
+   I am sure I will have helped some friends at some 
+   point for this is due!
 *)
 
 (* indicate planning to use the Unit testing module *)
