@@ -20,6 +20,10 @@ val () =
     (fn () => mynull [])
     true
 
+val () =
+    Unit.checkExpectWith Bool.toString "mynull [1] should be false"
+    (fn () => mynull [1])
+    false
 
 (**** Problem B ****)
 
@@ -33,6 +37,21 @@ val () =
     (fn () => firstVowel [#"a",#"c",#"k"])
     true
 
+val () =
+    Unit.checkExpectWith Bool.toString "firstVowel 'bck' should be false"
+    (fn () => firstVowel [#"b",#"c",#"k"])
+    false
+
+val () =
+    Unit.checkExpectWith Bool.toString "firstVowel 'uck' should be true"
+    (fn () => firstVowel [#"u",#"c",#"k"])
+    true
+
+val () =
+    Unit.checkExpectWith Bool.toString "firstVowel [] should be false"
+    (fn () => firstVowel [])
+    false
+
 (**** Problem C ****)
 
 fun reverse (l : 'a list) : 'a list =
@@ -43,6 +62,24 @@ val () =
   "reverse [1,2] should be [2,1]"
   (fn () => reverse [1,2])
   [2,1]
+
+val () =
+  Unit.checkExpectWith (Unit.listString Int.toString) 
+  "reverse [2] should be [2]"
+  (fn () => reverse [2])
+  [2]
+
+val () =
+  Unit.checkExpectWith (Unit.listString Char.toString) 
+  "reverse [#'a',#'c',#'k'] should be [#'k',#'c',#'a']"
+  (fn () => reverse [#"a",#"c",#"k"])
+  [#"k",#"c",#"a"]
+
+val () =
+  Unit.checkExpectWith (Unit.listString Int.toString) 
+  "reverse [] should be []"
+  (fn () => reverse [] : int list)
+  []
 
 (**** Problem D ****)
 
@@ -60,6 +97,30 @@ val () =
   Unit.checkExpectWith Int.toString
   "minlist [1,2,3,4,0] should be 0"
   (fn () => minlist [1,2,3,4,0])
+  0
+
+val () =
+  Unit.checkExpectWith Int.toString
+  "minlist [0,1,2,3,4,0] should be 0"
+  (fn () => minlist [0,1,2,3,4,0])
+  0
+
+val () =
+  Unit.checkExpectWith Int.toString
+  "minlist [0,1,2,~3,4,0] should be ~3"
+  (fn () => minlist [0,1,2,~3,4,0])
+  ~3
+
+val () =
+  Unit.checkExpectWith Int.toString
+  "minlist [0,0,0,0,0,0] should be 0"
+  (fn () => minlist [0,0,0,0,0,0])
+  0
+
+val () =
+  Unit.checkExpectWith Int.toString
+  "minlist [0] should be 0"
+  (fn () => minlist [0])
   0
 
 (**** Problem E ****)
@@ -84,10 +145,17 @@ val () =
   "zip ([1,2], [2,1,3]) should raise an exceptions"
   (fn () => zip ([1,2], [2,1,3]))
 
+val () =
+  Unit.checkExpectWith (Unit.listString (fn (x, y) => "(" ^ Int.toString x ^ "," ^ Int.toString y ^ ")"))
+  "zip ([], []) should []"
+  (fn () => zip ([],[]) : (int * int) list)
+  []
+
 (**** Problem F ****)
 
 fun concat (l : 'a list list) : 'a list = 
-  List.foldl (fn (x, acc) => acc @ (List.foldl (fn (x2, acc2) => acc2 @ [x2]) [] x)) [] l 
+  List.foldl (fn (x, acc) => acc @ (List.foldl (fn (x2, acc2)
+                          => acc2 @ [x2]) [] x)) [] l 
 
 
 (* Probably better with foldr???)
@@ -99,6 +167,37 @@ val () =
   "concat [[1], [2, 3, 4], [], [5, 6]] should be [1, 2, 3, 4, 5, 6]"
   (fn () => concat [[1], [2, 3, 4], [], [5, 6]])
   [1, 2, 3, 4, 5, 6]
+
+val () =
+  Unit.checkExpectWith (Unit.listString Int.toString)
+  "concat [[], [1], [], [2, 3], [], [4, 5, 6], []] should be [1, 2, 3, 4, 5, 6]"
+  (fn () => concat [[], [1], [], [2, 3], [], [4, 5, 6], []])
+  [1, 2, 3, 4, 5, 6]
+
+val () =
+  Unit.checkExpectWith (Unit.listString Int.toString)
+  "concat [[], []] should be []"
+  (fn () => concat [[], []])
+  []
+
+val () =
+  Unit.checkExpectWith (Unit.listString Int.toString)
+  "concat [[1, 2, 3]] should be [1, 2, 3]"
+  (fn () => concat [[1, 2, 3]])
+  [1, 2, 3]
+
+val () =
+  Unit.checkExpectWith (Unit.listString Int.toString)
+  "concat [[1], [2], [3], [4]] should be [1, 2, 3, 4]"
+  (fn () => concat [[1], [2], [3], [4]])
+  [1, 2, 3, 4]
+
+val () =
+  Unit.checkExpectWith (Unit.listString Int.toString)
+  "concat [[1, 2], [3, 4, 5], [6]] should be [1, 2, 3, 4, 5, 6]"
+  (fn () => concat [[1, 2], [3, 4, 5], [6]])
+  [1, 2, 3, 4, 5, 6]
+
 
 (**** Problem G ****)
 
@@ -116,6 +215,17 @@ val () =
   (fn () => isDigit #"a")
   false
 
+val () = 
+  Unit.checkExpectWith Bool.toString
+  "isDigit #'0' should be true"
+  (fn () => isDigit #"0")
+  true
+
+val () = 
+  Unit.checkExpectWith Bool.toString
+  "isDigit #'9' should be true"
+  (fn () => isDigit #"9")
+  true
 
 (**** Problem H ****)
 
@@ -138,6 +248,12 @@ val () =
   Unit.checkExpectWith Bool.toString
   "isAlpha #'a' should be false"
   (fn () => isAlpha #"a")
+  true
+
+val () = 
+  Unit.checkExpectWith Bool.toString
+  "isAlpha #'A' should be false"
+  (fn () => isAlpha #"A")
   true
 
 (**** Problem I ****)
@@ -169,6 +285,17 @@ val () =
   (fn () => partition (fn x => x mod 2 = 0) [1, 2, 3, 4, 5])
   ([2, 4], [1, 3, 5]);
 
+val () =
+  Unit.checkExpectWith (fn (l1, l2) => "(" ^ Unit.listString Int.toString l1 ^ ", " ^ Unit.listString Int.toString l2 ^ ")")
+  "partition (fn x => x mod 2 = 0) [1, 2, 3, 4, 5] should return ([2, 4], [1, 3, 5])"
+  (fn () => partition (fn x => x + 2 < 100) [1, 2, 3, 4, 5])
+  ([1, 2, 3, 4, 5], []);
+
+val () =
+  Unit.checkExpectWith (fn (l1, l2) => "(" ^ Unit.listString Int.toString l1 ^ ", " ^ Unit.listString Int.toString l2 ^ ")")
+  "partition (fn x => x mod 2 = 0) [1, 2, 3, 4, 5] should return ([2, 4], [1, 3, 5])"
+  (fn () => partition (fn x => x + 2 > 100) [1, 2, 3, 4, 5])
+  ([], [1, 2, 3, 4, 5]);
 
 (* Unit testing reporting *)
 
