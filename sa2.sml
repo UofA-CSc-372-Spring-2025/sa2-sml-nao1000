@@ -14,6 +14,12 @@
     the val (l1, l2) = parition p xs which was similar
     to what I was trying to do, but I didn't realize I
     could set it up that way.
+
+    Added later: Spent probably another hour on it
+    messing around and trying to improve code/
+    write tests. For example, I way overcomplicated
+    the concat function using nested foldls when it
+    only needs one.
 *)
 
 (* Collaborators and references:
@@ -174,13 +180,7 @@ val () =
 (**** Problem F ****)
 
 fun concat (l : 'a list list) : 'a list = 
-  List.foldl (fn (x, acc) => acc @ (List.foldl (fn (x2, acc2)
-                          => acc2 @ [x2]) [] x)) [] l 
-
-
-(* Probably better with foldr???)
-fun concat (l : 'a list list) : 'a list = 
-  List.foldr (fn (x, acc) => (List.foldr (fn (x2, acc2) => x2 :: acc2) [] x) @ acc) [] l  *)
+  List.foldl (fn (x, acc) => acc @ x) [] l
 
 val () =
   Unit.checkExpectWith (Unit.listString Int.toString)
@@ -217,6 +217,30 @@ val () =
   "concat [[1, 2], [3, 4, 5], [6]] should be [1, 2, 3, 4, 5, 6]"
   (fn () => concat [[1, 2], [3, 4, 5], [6]])
   [1, 2, 3, 4, 5, 6]
+
+val () =
+  Unit.checkExpectWith (Unit.listString Char.toString)
+  "concat [[#'a'], [#'b', #'c', #'d'], [], [#'e', #'f']] should be [#'a', #'b', #'c', #'d', #'e', #'f']"
+  (fn () => concat [[#"a"], [#"b", #"c", #"d"], [], [#"e", #"f"]])
+  [#"a", #"b", #"c", #"d", #"e", #"f"]
+
+val () =
+  Unit.checkExpectWith (Unit.listString Char.toString)
+  "concat [[], [#'x'], [#'y', #'z']] should be [#'x', #'y', #'z']"
+  (fn () => concat [[], [#"x"], [#"y", #"z"]])
+  [#"x", #"y", #"z"]
+
+(* val () =
+  Unit.checkExpectWith (Unit.listString Real.toString)
+  "concat [[1.1], [2.2, 3.3], [], [4.4, 5.5]] should be [1.1, 2.2, 3.3, 4.4, 5.5]"
+  (fn () => concat [[1.1], [2.2, 3.3], [], [4.4, 5.5]])
+  [1.1, 2.2, 3.3, 4.4, 5.5] *)
+
+(* val () =
+  Unit.checkExpectWith (Unit.listString Real.toString)
+  "concat [[], [7.7, 8.8], [9.9]] should be [7.7, 8.8, 9.9]"
+  (fn () => concat [[], [7.7, 8.8], [9.9]])
+  [7.7, 8.8, 9.9] *)
 
 
 (**** Problem G ****)
@@ -286,7 +310,7 @@ val () =
   Unit.checkExpectWith (fn x => x)
   "svgCircle (200, 300, 100, \"red\") should return <circle cx=\"200\" cy=\"300\" r=\"100\" fill=\"red\" />"
   (fn () => svgCircle (200, 300, 100, "red"))
-  "<circle cx=\"200\" cy=\"300\" r=\"100\" fill=\"red\" />";
+  "<circle cx=\"200\" cy=\"300\" r=\"100\" fill=\"red\" />"
 
 (**** Problem J ****)
 
@@ -303,19 +327,25 @@ val () =
   Unit.checkExpectWith (fn (l1, l2) => "(" ^ Unit.listString Int.toString l1 ^ ", " ^ Unit.listString Int.toString l2 ^ ")")
   "partition (fn x => x mod 2 = 0) [1, 2, 3, 4, 5] should return ([2, 4], [1, 3, 5])"
   (fn () => partition (fn x => x mod 2 = 0) [1, 2, 3, 4, 5])
-  ([2, 4], [1, 3, 5]);
+  ([2, 4], [1, 3, 5])
 
 val () =
   Unit.checkExpectWith (fn (l1, l2) => "(" ^ Unit.listString Int.toString l1 ^ ", " ^ Unit.listString Int.toString l2 ^ ")")
   "partition (fn x => x mod 2 = 0) [1, 2, 3, 4, 5] should return ([2, 4], [1, 3, 5])"
   (fn () => partition (fn x => x + 2 < 100) [1, 2, 3, 4, 5])
-  ([1, 2, 3, 4, 5], []);
+  ([1, 2, 3, 4, 5], [])
 
 val () =
   Unit.checkExpectWith (fn (l1, l2) => "(" ^ Unit.listString Int.toString l1 ^ ", " ^ Unit.listString Int.toString l2 ^ ")")
   "partition (fn x => x mod 2 = 0) [1, 2, 3, 4, 5] should return ([2, 4], [1, 3, 5])"
   (fn () => partition (fn x => x + 2 > 100) [1, 2, 3, 4, 5])
-  ([], [1, 2, 3, 4, 5]);
+  ([], [1, 2, 3, 4, 5])
+
+val () =
+  Unit.checkExpectWith (fn (l1, l2) => "(" ^ Unit.listString Int.toString l1 ^ ", " ^ Unit.listString Int.toString l2 ^ ")")
+  "partition (fn x => x mod 2 = 0) [] should return ([], [])"
+  (fn () => partition (fn x => x + 2 > 100) [])
+  ([], [])
 
 (* Unit testing reporting *)
 
