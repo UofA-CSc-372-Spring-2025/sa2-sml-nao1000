@@ -15,7 +15,7 @@
     to what I was trying to do, but I didn't realize I
     could set it up that way.
 
-    Added later: Spent probably another hour on it
+    Added later: Spent probably another two hours on it
     messing around and trying to improve code/
     write tests. For example, I way overcomplicated
     the concat function using nested foldls when it
@@ -52,11 +52,16 @@ val () =
     false
 
 (**** Problem B ****)
-
+(* firstVowel char list -> bool
+ * Using pattern matching, the function checks
+ * if the first character in the list is a vowel *)
 fun firstVowel [] = false
-  | firstVowel (x::xs) = (x = #"a" orelse x = #"e"
-                   orelse x = #"i" orelse x = #"o"
-                   orelse x = #"u")
+  | firstVowel (#"a"::_) = true
+  | firstVowel (#"e"::_) = true
+  | firstVowel (#"i"::_) = true
+  | firstVowel (#"o"::_) = true
+  | firstVowel (#"u"::_) = true
+  | firstVowel (_::_) = false
 
 val () =
     Unit.checkExpectWith Bool.toString "firstVowel 'ack' should be true"
@@ -79,7 +84,9 @@ val () =
     false
 
 (**** Problem C ****)
-
+(* reverse 'a list -> 'a list 
+ * This function takes a list of any type
+ * and reverses the ordering of the list *)
 fun reverse (l : 'a list) : 'a list =
   List.foldl (fn (x, acc) => [x] @ acc) [] l
 
@@ -108,11 +115,12 @@ val () =
   []
 
 (**** Problem D ****)
-
-fun minlist (l : int list) : int =
-  case l of
-      []    => raise Match
-    | x::xs => List.foldl (fn (x, acc) => Int.min (acc,x)) x l
+(* minList int list -> int 
+ * This function finds the smallest integer
+ * in a list. Will raise an exception with
+ * and empty list *)
+fun minlist [] = raise Match
+  | minlist (x :: xs) = List.foldl (fn (x, acc) => Int.min (acc,x)) x xs
 
 val () =
   Unit.checkExnWith Int.toString
@@ -150,15 +158,16 @@ val () =
   0
 
 (**** Problem E ****)
-
+(* zip 'a list * 'b list -> ('a * 'b) list 
+ * This function takes two lists of any type
+ * creating a new list of pairs of the elements
+ * in the same locations of each list. An exception is
+ * is raised if the lists are unequal length *)
 exception Mismatch of string
 
 fun zip ([], []) = []
   | zip (x :: xs, y :: ys) = (x, y) :: zip(xs, ys)
   | zip (_, _) = raise Mismatch "Lists are of different lengths"
-
-(* fun zip ((l1, l2) : ('a list, 'b list)) : ('a * 'b) list = 
-  List.foldl (fn (x, y, acc) => (x, y) :: acc) [] l1 l2 *)
 
 val () =
   Unit.checkExpectWith (Unit.listString (fn (x, y) => "(" ^ Int.toString x ^ "," ^ Int.toString y ^ ")"))
@@ -178,7 +187,10 @@ val () =
   []
 
 (**** Problem F ****)
-
+(* concat 'a list list -> 'a list
+ * This function takes a list of lists that contain
+ * elements of some type and combines all of the inner
+ * lists into one list. *)
 fun concat (l : 'a list list) : 'a list = 
   List.foldl (fn (x, acc) => acc @ x) [] l
 
@@ -230,22 +242,49 @@ val () =
   (fn () => concat [[], [#"x"], [#"y", #"z"]])
   [#"x", #"y", #"z"]
 
-(* val () =
-  Unit.checkExpectWith (Unit.listString Real.toString)
-  "concat [[1.1], [2.2, 3.3], [], [4.4, 5.5]] should be [1.1, 2.2, 3.3, 4.4, 5.5]"
-  (fn () => concat [[1.1], [2.2, 3.3], [], [4.4, 5.5]])
-  [1.1, 2.2, 3.3, 4.4, 5.5] *)
+val epsilon = 1.0E~6 (* a tolerance value for real comparison *)
 
-(* val () =
-  Unit.checkExpectWith (Unit.listString Real.toString)
-  "concat [[], [7.7, 8.8], [9.9]] should be [7.7, 8.8, 9.9]"
-  (fn () => concat [[], [7.7, 8.8], [9.9]])
-  [7.7, 8.8, 9.9] *)
+(* approxEqual real * real -> bool 
+ * This function compares two reals as
+ * reals are not equality types *)
+fun approxEqual(x: real, y: real) =
+  abs(x - y) < epsilon
+
+(* approxEqualList real list * real list -> bool
+ * This function compares all of the reals in the two
+ * lists and checks of the list are equal *)
+fun approxEqualList ([], []) = true
+    | approxEqualList (x :: xs, y :: ys) = approxEqual(x,y) andalso approxEqualList(xs, ys)
+    | approxEqualList (_, _) = false
+
+val () =
+    Unit.checkExpectWith Bool.toString
+    "concat [[], [7.7, 8.8], [9.9]] should be [7.7, 8.8, 9.9]"
+    (fn () => approxEqualList (concat [[], [7.7, 8.8], [9.9]], [7.7, 8.8, 9.9]))
+    true
+
+val () =
+  Unit.checkExpectWith Bool.toString
+  "concat [[1.1], [2.2, 3.3], [], [4.4, 5.5]] should be [1.1, 2.2, 3.3, 4.4, 5.5]"
+  (fn () => approxEqualList (concat [[1.1], [2.2, 3.3], [], [4.4, 5.5]], [1.1, 2.2, 3.3, 4.4, 5.5]))
+  true
 
 
 (**** Problem G ****)
-
-fun isDigit c = (c >= #"0" andalso c <= #"9")
+(* isDigit char -> bool 
+ * This function uses pattern matching
+ * to check if the character is a digit *)
+fun isDigit #"0" = true
+  | isDigit #"1" = true
+  | isDigit #"2" = true
+  | isDigit #"3" = true
+  | isDigit #"4" = true
+  | isDigit #"5" = true
+  | isDigit #"6" = true
+  | isDigit #"7" = true
+  | isDigit #"8" = true
+  | isDigit #"9" = true
+  | isDigit _ = false
 
 val () = 
   Unit.checkExpectWith Bool.toString
@@ -272,7 +311,9 @@ val () =
   true
 
 (**** Problem H ****)
-
+(* isAlpha char -> bool 
+ * This function uses a characters ASCII value
+ * to see if it is an alphabetical character *)
 fun isAlpha c = 
   let 
     val x = Char.ord c
@@ -301,7 +342,9 @@ val () =
   true
 
 (**** Problem I ****)
-
+(* svgCircle int * int * int * string -> string 
+ * This function creates a formatted SVG string with 
+ * given x and y cords, a radius, and a fill color *)
 fun svgCircle (cx, cy, r, fill) = 
   "<circle cx=\"" ^ Int.toString cx ^ "\" cy=\"" ^ Int.toString cy ^
   "\" r=\"" ^ Int.toString r ^ "\" fill=\"" ^ fill ^ "\" />"
@@ -313,7 +356,11 @@ val () =
   "<circle cx=\"200\" cy=\"300\" r=\"100\" fill=\"red\" />"
 
 (**** Problem J ****)
-
+(* partition ('a -> bool) -> 'a list -> 'a list * 'a list 
+ * This function takes a predicate function and a list of
+ * any type. All elements passing the predicate are stored
+ * in the left list of the pair and the ones that fail are 
+ * stored in the right list of the pair. *)
 fun partition p [] = ([],[])
   | partition p (x :: xs) =
     let
@@ -323,26 +370,28 @@ fun partition p [] = ([],[])
       else (l1, x::l2)
     end
 
+val showIntList = Unit.listString Int.toString
+
 val () =
-  Unit.checkExpectWith (fn (l1, l2) => "(" ^ Unit.listString Int.toString l1 ^ ", " ^ Unit.listString Int.toString l2 ^ ")")
+  Unit.checkExpectWith (Unit.pairString showIntList showIntList)
   "partition (fn x => x mod 2 = 0) [1, 2, 3, 4, 5] should return ([2, 4], [1, 3, 5])"
   (fn () => partition (fn x => x mod 2 = 0) [1, 2, 3, 4, 5])
   ([2, 4], [1, 3, 5])
 
 val () =
-  Unit.checkExpectWith (fn (l1, l2) => "(" ^ Unit.listString Int.toString l1 ^ ", " ^ Unit.listString Int.toString l2 ^ ")")
+  Unit.checkExpectWith (Unit.pairString showIntList showIntList)
   "partition (fn x => x mod 2 = 0) [1, 2, 3, 4, 5] should return ([2, 4], [1, 3, 5])"
   (fn () => partition (fn x => x + 2 < 100) [1, 2, 3, 4, 5])
   ([1, 2, 3, 4, 5], [])
 
 val () =
-  Unit.checkExpectWith (fn (l1, l2) => "(" ^ Unit.listString Int.toString l1 ^ ", " ^ Unit.listString Int.toString l2 ^ ")")
+  Unit.checkExpectWith (Unit.pairString showIntList showIntList)
   "partition (fn x => x mod 2 = 0) [1, 2, 3, 4, 5] should return ([2, 4], [1, 3, 5])"
   (fn () => partition (fn x => x + 2 > 100) [1, 2, 3, 4, 5])
   ([], [1, 2, 3, 4, 5])
 
 val () =
-  Unit.checkExpectWith (fn (l1, l2) => "(" ^ Unit.listString Int.toString l1 ^ ", " ^ Unit.listString Int.toString l2 ^ ")")
+  Unit.checkExpectWith (Unit.pairString showIntList showIntList)
   "partition (fn x => x mod 2 = 0) [] should return ([], [])"
   (fn () => partition (fn x => x + 2 > 100) [])
   ([], [])
